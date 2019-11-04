@@ -6,13 +6,22 @@ exports.apiRandom = function (req, res, q) {
 
     let obj = {};
 
-    obj.nums = [];
+    obj.min = 0;
+    obj.max = 0;
+
+    obj.num = [];
     obj.index = parseInt(q.query["i"]);
-    obj.range = parseInt(q.query["r"]);
+    obj.min = parseInt(q.query["min"]);
+    obj.max = parseInt(q.query["max"]);
+
+    if(obj.min > obj.max) {
+        let temp = obj.min;
+        obj.min = obj.max;
+        obj.max = temp;
+    }
 
     for(let i = 0; i < obj.index; i++) {
-        obj.nums[i] = Math.round(Math.random() * obj.range);
-        console.log(obj.nums[i]);
+        obj.num[i] = Math.round(Math.random() * (obj.max - obj.min)) + obj.min;
     }
 
     res.end(JSON.stringify(obj));
