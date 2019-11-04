@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/../WebMath/.idea/webMath.iml" filepath="$PROJECT_DIR$/../WebMath/.idea/webMath.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/webMath.iml" filepath="$PROJECT_DIR$/.idea/webMath.iml" />
     </modules>
   </component>
 </project>

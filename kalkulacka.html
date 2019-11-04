@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kalkulacka</title>
+    <script>
+
+        let finalNum = true;
+        let firstNum = "";
+        let secondNum = "";
+        let globalO = "";
+
+        function insertNum(num) {
+            if (finalNum) {
+                firstNum = document.getElementById("nums").value;
+                document.getElementById("nums").value = "";
+                finalNum = false;
+            }
+            let temp = document.getElementById("nums").value;
+            document.getElementById("nums").value = temp + num;
+        }
+
+        function insertOperator(operator) {
+            document.getElementById("operators").value = operator;
+            if (operator === "+") {
+                globalO = "%2B";
+            } else {
+                globalO = operator;
+            }
+            finalNum = true;
+        }
+
+        function getResult() {
+            secondNum = document.getElementById("nums").value;
+            fetch("http://localhost:2000/doTheMath?o=" + globalO + "&s=" + secondNum + "&f=" + firstNum).then(function (response) {
+                response.text().then(function (text) {
+                    let obj = JSON.parse(text);
+                    if(obj.result === "Error") {
+                        document.getElementById("nums").value = obj.result;
+                        let temp = document.getElementById("history").innerHTML;
+                        document.getElementById("history").innerHTML = obj.result + "<br>" + temp;
+                    } else {
+                        document.getElementById("nums").value = Math.round(obj.result * 100) / 100;
+                        let temp = document.getElementById("history").innerHTML;
+                        document.getElementById("history").innerHTML = obj.firstNum + " " + obj.operator + " " + obj.secondNum + " = " +
+                            Math.round(obj.result * 100) / 100 + "<br>" + temp;
+                    }
+                });
+            });
+            document.getElementById("operators").value = "";
+            firstNum = "";
+            secondNum = "";
+            globalO = "";
+            finalNum = true;
+        }
+
+    </script>
+</head>
+<body>
+    <p id="test" style="font-size: 20px"></p>
+    <input id="nums" type="text" style="height: 50px; width: 637.5px; font-size: 50px; text-align: right" disabled>
+    <input id="operators" type="text" style="height: 50px; width: 50px; font-size: 50px; text-align: center ;" disabled>
+    <br><br>
+    <input type="button" onclick="insertNum('7')" style="height: 50px; width: 125px; font-size: 40px" value="7">
+    <input type="button" onclick="insertNum('8')" style="height: 50px; width: 125px; font-size: 40px" value="8">
+    <input type="button" onclick="insertNum('9')" style="height: 50px; width: 125px; font-size: 40px" value="9">
+    <input type="button" onclick="insertOperator('*')" style="height: 50px; width: 125px; font-size: 40px" value="X">
+    <input type="button" onclick="insertOperator('/')" style="height: 50px; width: 125px; font-size: 40px" value="/">
+    <br><br>
+    <input type="button" onclick="insertNum('4')" style="height: 50px; width: 125px; font-size: 40px" value="4">
+    <input type="button" onclick="insertNum('5')" style="height: 50px; width: 125px; font-size: 40px" value="5">
+    <input type="button" onclick="insertNum('6')" style="height: 50px; width: 125px; font-size: 40px" value="6">
+    <input type="button" onclick="insertOperator('+')" style="height: 50px; width: 125px; font-size: 40px" value="+">
+    <input type="button" onclick="insertOperator('-')" style="height: 50px; width: 125px; font-size: 40px" value="-">
+    <br><br>
+    <input type="button" onclick="insertNum('1')" style="height: 50px; width: 125px; font-size: 40px" value="1">
+    <input type="button" onclick="insertNum('2')" style="height: 50px; width: 125px; font-size: 40px" value="2">
+    <input type="button" onclick="insertNum('3')" style="height: 50px; width: 125px; font-size: 40px" value="3">
+    <input type="button" onclick="insertOperator('%')" style="height: 50px; width: 125px; font-size: 40px" value="%">
+    <input type="button" onclick="getResult()" value="="
+       style="height: 50px; width: 125px; font-size: 40px; background-color: red; border-color: red">
+    <h3>Historie:</h3>
+    <p id="history"></p>
+</body>
+</html>
