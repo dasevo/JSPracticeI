@@ -5,61 +5,46 @@
     <title>Kalkulacka</title>
     <script>
 
-        let finalNum = true;
-        let firstNum = "";
-        let secondNum = "";
-        let globalO = "";
-
         function insertNum(num) {
-            if (finalNum) {
-                firstNum = document.getElementById("nums").value;
-                document.getElementById("nums").value = "";
-                finalNum = false;
-            }
             let temp = document.getElementById("nums").value;
-            document.getElementById("nums").value = temp + num;
+            document.getElementById("nums").value = temp + num + " ";
         }
 
         function insertOperator(operator) {
-            document.getElementById("operators").value = operator;
-            if (operator === "+") {
-                globalO = "%2B";
-            } else {
-                globalO = operator;
-            }
-            finalNum = true;
+            let temp = document.getElementById("nums").value;
+            document.getElementById("nums").value = temp + operator + " ";
         }
 
         function getResult() {
-            secondNum = document.getElementById("nums").value;
-            fetch("http://localhost:2000/doTheMath?o=" + globalO + "&s=" + secondNum + "&f=" + firstNum).then(function (response) {
+            let input = document.getElementById("nums").value;
+            input = input.replace("+", "%2B");
+            fetch("http://localhost:2000/doTheMath?i=" + input).then(function (response) {
                 response.text().then(function (text) {
                     let obj = JSON.parse(text);
                     if(obj.result === "Error") {
-                        document.getElementById("nums").value = obj.result;
+                        document.getElementById("operators").value = obj.result;
                         let temp = document.getElementById("history").innerHTML;
                         document.getElementById("history").innerHTML = obj.result + "<br>" + temp;
                     } else {
-                        document.getElementById("nums").value = Math.round(obj.result * 100) / 100;
+                        document.getElementById("operators").value = Math.round(obj.result * 100) / 100;
                         let temp = document.getElementById("history").innerHTML;
                         document.getElementById("history").innerHTML = obj.firstNum + " " + obj.operator + " " + obj.secondNum + " = " +
                             Math.round(obj.result * 100) / 100 + "<br>" + temp;
                     }
                 });
             });
-            document.getElementById("operators").value = "";
-            firstNum = "";
-            secondNum = "";
-            globalO = "";
-            finalNum = true;
+            document.getElementById("nums").value = "";
+
         }
 
     </script>
 </head>
 <body>
+<h1>Kalkulačka</h1>
+<h3>Kalkulačka zatím umí pracovat pouze s jednocifernými čísly a umí používat pouze jeden operátor najednou. Na rozšířených funkcích se stále pracuje</h3>
     <p id="test" style="font-size: 20px"></p>
-    <input id="nums" type="text" style="height: 50px; width: 637.5px; font-size: 50px; text-align: right" disabled>
-    <input id="operators" type="text" style="height: 50px; width: 50px; font-size: 50px; text-align: center ;" disabled>
+    <input id="nums" type="text" style="height: 50px; width: 637.5px; font-size: 50px; text-align: right">
+    <input id="operators" type="text" style="height: 50px; width: 300px; font-size: 50px; text-align: center ;" disabled>
     <br><br>
     <input type="button" onclick="insertNum('7')" style="height: 50px; width: 125px; font-size: 40px" value="7">
     <input type="button" onclick="insertNum('8')" style="height: 50px; width: 125px; font-size: 40px" value="8">
