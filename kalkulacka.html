@@ -5,6 +5,8 @@
     <title>Kalkulacka</title>
     <script>
 
+        const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+
         function insertNum(num) {
             let temp = document.getElementById("nums").value;
             document.getElementById("nums").value = temp + num;
@@ -18,7 +20,7 @@
         function getResult() {
             let input = document.getElementById("nums").value;
             input = input.replace("+", "%2B");
-            fetch("http://localhost:2000/doTheMath?i=" + input).then(function (response) {
+            fetch(HOST+"/doTheMath?i=" + input).then(function (response) {
                 response.text().then(function (text) {
                     let obj = JSON.parse(text);
                     if(obj.result === "Error") {

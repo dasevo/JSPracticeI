@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Priklady</title>
     <script>
+        const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
         let min = 1; //abychom se vyhli dělení nulou
         let max = 500;
         let operatorMax = 3; //na začátku je dělení povoleno, snížením indexu na 2 se dělení zakáže
@@ -14,11 +15,11 @@
             let operator = "";
             let firstNum = 0;
             let secondNum = 0;
-            fetch("http://localhost:2000/getNum?i=1&min=0&max=" + operatorMax).then(function (response) { //generuje operátor
+            fetch(HOST + "/getNum?i=1&min=0&max=" + operatorMax).then(function (response) { //generuje operátor
                response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     operator = OPERATORS[obj.num[0]];
-                   fetch("http://localhost:2000/getNum?i=2&min=" + min + "&max= " + max).then(function (response) { //generuje dvě čísla
+                   fetch(HOST+"/getNum?i=2&min=" + min + "&max= " + max).then(function (response) { //generuje dvě čísla
                        response.text().then(function(text) {
                            let next = JSON.parse(text);
                            firstNum = next.num[0];
@@ -62,7 +63,7 @@
             if(change) { //při zmáčknutí tlačítka enter se odehraje pouze jednou dokud se nezměnní zadání
                 let input = document.getElementById("random").innerHTML.toString();
                 input = input.replace("+", "%2B");
-                fetch("http://localhost:2000/doTheMath?i=" + input).then(function (response) {
+                fetch(HOST+"/doTheMath?i=" + input).then(function (response) {
                     response.text().then(function (text) { //následující kód zpracovává odpověď a mění historii výpočtů TODO server může zastávat tuto funkci
                         let obj = JSON.parse(text);
                         let answer = parseInt(document.getElementById("answer").value);
@@ -70,7 +71,7 @@
                         let solution = Math.round(parseInt(obj.result) * 100)/100;
                         let problem = document.getElementById("random").innerHTML;
 
-                        fetch("http://localhost:2000/compare?f=" + answer + "&s=" + solution).then(function(response) {
+                        fetch(HOST+"/compare?f=" + answer + "&s=" + solution).then(function(response) {
                             response.text().then(function(text) {
                                 let other = JSON.parse(text);
                                 let temp = document.getElementById("history").innerHTML;
