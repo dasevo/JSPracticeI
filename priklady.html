@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Priklady</title>
+    <script>
+        let min = 1; //abychom se vyhli dělení nulou
+        let max = 500;
+        let operatorMax = 3; //na začátku je dělení povoleno, snížením indexu na 2 se dělení zakáže
+        let change = true; //zaručí, že po stisknutí tlačítka enter se příklad odevzdá pouze jednou
+        const OPERATORS = ["+", "-", "*", "/"];
+
+        function generate() {
+            let operator = "";
+            let firstNum = 0;
+            let secondNum = 0;
+            fetch("http://localhost:2000/getNum?i=1&min=0&max=" + operatorMax).then(function (response) { //generuje operátor
+               response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    operator = OPERATORS[obj.num[0]];
+                   fetch("http://localhost:2000/getNum?i=2&min=" + min + "&max= " + max).then(function (response) { //generuje dvě čísla
+                       response.text().then(function(text) {
+                           let next = JSON.parse(text);
+                           firstNum = next.num[0];
+                           secondNum = next.num[1];
+                           document.getElementById("random").innerHTML = firstNum + " " + operator + " " + secondNum + " = ";
+                       });
+                   });
+               });
+            });
+            change = true;
+        }
+
+        function keyTest() {
+            document.addEventListener('keypress', (e) => { //ve chvíli, kdy je v odpovědním řádku zmáčknut enter, příklad se odevzdá
+               if(e.code === "Enter"||e.code === "NumpadEnter") {
+                    submit();
+                    change = false;
+               }
+            });
+        }
+
+        function changeDivide() { //nastavuje, zda bude povoleno dělení, či ne
+            if(operatorMax === 3) {
+                operatorMax = 2;
+            } else if(operatorMax === 2) {
+                operatorMax = 3;
+            }
+        }
+
+        function setValues() { //umožňuje nastavit rozmezí hodnot náhodně vygeerovaných čísel
+            if(!(document.getElementById("minimal").value === "")) {
+                min = document.getElementById("minimal").value;
+            }
+            if(!(document.getElementById("maximal").value === "")) {
+                max = document.getElementById("maximal").value;
+            }
+            generate();
+        }
+
+        function submit() {
+            if(change) { //při zmáčknutí tlačítka enter se odehraje pouze jednou dokud se nezměnní zadání
+                let input = document.getElementById("random").innerHTML.toString();
+                input = input.replace("+", "%2B");
+                fetch("http://localhost:2000/doTheMath?i=" + input).then(function (response) {
+                    response.text().then(function (text) { //následující kód zpracovává odpověď a mění historii výpočtů TODO server může zastávat tuto funkci
+                        let obj = JSON.parse(text);
+                        let answer = parseInt(document.getElementById("answer").value);
+                        answer = Math.round(answer * 100) / 100;
+                        let solution = Math.round(parseInt(obj.result) * 100)/100;
+                        let problem = document.getElementById("random").innerHTML;
+
+                        fetch("http://localhost:2000/compare?f=" + answer + "&s=" + solution).then(function(response) {
+                            response.text().then(function(text) {
+                                let other = JSON.parse(text);
+                                let temp = document.getElementById("history").innerHTML;
+                                if(other.compare) {
+                                    document.getElementById("correction").innerHTML = "Správně!";
+                                    document.getElementById("history").innerHTML = problem + answer + "<i>   Správně</i><br>" + temp;
+                                } else {
+                                    document.getElementById("correction").innerHTML = "Špatně! Správná odpověď je: " + Math.round(parseInt(obj.result) * 100) / 100;
+                                    document.getElementById("history").innerHTML =problem + answer + "<i>   Špatně</i><br>" + temp;
+                                }
+                            });
+                        });
+
+                    });
+                });
+            }
+        }
+
+    </script>
+</head>
+<body onload="generate()">
+<h1>Procvičování příkladů</h1>
+<h3>Odpovedi zadávejte na nejvýše 2 desetinná čísla</h3>
+    <label id="random"></label> <input id="answer" type="number" placeholder="odpověď" onkeydown="keyTest()">
+    <input type="button" value="odeslat" onclick="submit()">
+    <input type="button" value="dalsi" onclick="generate()">   <label id="correction"></label>
+    <label style="margin-left: 200px"><b>Nastaveni:</b></label>
+    <input id="minimal" type="number" placeholder="min">  <input id="maximal" type="number" placeholder="max">  <input type="button" value="potvrdit" onclick="setValues()">
+    <br>
+    <label style="margin-left: 700px">pouzivat deleni: </label><input type="checkbox" onclick="changeDivide()" checked>
+    <br><br>
+    <h4>Historie</h4>
+    <p id="history"></p>
+</body>
+</html>
