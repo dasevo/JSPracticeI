@@ -7,12 +7,12 @@
 
         function insertNum(num) {
             let temp = document.getElementById("nums").value;
-            document.getElementById("nums").value = temp + num + " ";
+            document.getElementById("nums").value = temp + num;
         }
 
         function insertOperator(operator) {
             let temp = document.getElementById("nums").value;
-            document.getElementById("nums").value = temp + operator + " ";
+            document.getElementById("nums").value = temp + " " +  operator + " ";
         }
 
         function getResult() {
@@ -41,7 +41,7 @@
 </head>
 <body>
 <h1>Kalkulačka</h1>
-<h3>Kalkulačka zatím umí pracovat pouze s jednocifernými čísly a umí používat pouze jeden operátor najednou. Na rozšířených funkcích se stále pracuje</h3>
+<h3>Kalkulačka umí používat pouze jeden operátor najednou.</h3>
     <p id="test" style="font-size: 20px"></p>
     <input id="nums" type="text" style="height: 50px; width: 637.5px; font-size: 50px; text-align: right">
     <input id="operators" type="text" style="height: 50px; width: 300px; font-size: 50px; text-align: center ;" disabled>
