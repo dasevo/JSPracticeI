@@ -4,10 +4,10 @@ const fs = require('fs');
 const apiCalculator = require("./api-calculator").apiCalculator;
 const apiRandom = require("./api-random").apiRandom;
 const apiCompare = require("./api-compare").apiCompare;
+const apiTimer = require("./api-timer").apiTimer;
 
 function processStaticFiles(res, fileName) {
     fileName = fileName.substr(1); //zkopiruju od druheho znaku
-    console.log(fileName);
     let contentType = "text/html";
     if (fileName.endsWith(".png")) {
         contentType = "image/png";
@@ -41,6 +41,11 @@ http.createServer((req, res) => {
     } else if(q.pathname === "/priklady.html") {
         res.writeHead(200, {"Content-type": "text/html", "Access-Control-Allow-Origin": "*"});
         processStaticFiles(res, "/priklady.html");
+    } else if(q.pathname.startsWith("/timer")) {
+        apiTimer(req, res, q);
+    } else if(q.pathname === "/stopky.html")  {
+        res.writeHead(200, {"Content-type": "text/html", "Access-Control-Allow-Origin": "*"});
+        processStaticFiles(res, "/timer.html");
     } else {
         res.writeHead(200, {"Content-type": "text/html", "Access-Control-Allow-Origin": "*"});
         processStaticFiles(res, "/index.html")

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stopky</title>
+</head>
+<script>
+    const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+    let id;
+
+
+    function startTimer() {
+        let idTemp;
+        fetch(HOST+"/timer/start").then(function (response) {
+            response.text().then(function (text) {
+                let obj = JSON.parse(text);
+                setId(obj.id);
+            });
+        });
+    }
+
+    function setId(idTemp) {
+        id = idTemp;
+
+    }
+
+    function stopTimer() {
+        document.getElementById("time").value = id;
+        fetch(HOST+"/timer/stop?id=?" + id).then(function(response) {
+            response.text().then(function(text) {
+                let obj = JSON.parse(text);
+                let timE = obj.time;
+                document.getElementById("time").value = timE;
+            });
+        });
+    }
+
+</script>
+<body>
+    <input id="time" type="text" disabled style="height:200px; width:600px;font-size:150px;text-align:right;font-style: oblique" value="00.00">
+    <br><br>
+    <input type="button" value="start" style="height:150px;width:200px;font-size:50px" onclick="startTimer()">
+    <input type="button" value="stop" style="height:150px;width:200px;font-size:50px" onclick="stopTimer()">
+    <input type="button" value="kolo" style="height:150px;width:200px;font-size:50px">
+</body>
+</html>
